@@ -18,6 +18,7 @@ async function run() {
         await client.connect();
         const partsCollection = client.db('shiftUp').collection('parts');
         const ordersCollection = client.db('shiftUp').collection('orders');
+        const reviewsCollection = client.db('shiftUp').collection('reviews');
 
         // get all parts for homepage 
         app.get('/parts', async(req,res) => {
@@ -50,7 +51,22 @@ async function run() {
             res.send(result);
         })
 
-        // // delete a part
+        // get all reviews
+        app.get('/reviews', async(req,res) => {
+            const query = {};
+            const cursor = reviewsCollection.find(query);
+            const reviews = await cursor.toArray();
+            res.send(reviews);
+          });
+
+        // add new review
+        app.post('/reviews', async(req, res) => {
+            const newReview = req.body;
+            const result = await reviewsCollection.insertOne(newReview); 
+            res.send(result);
+        })
+
+        // // delete an order
         app.delete('/orders/:id', async(req,res) => {
             const id = req.params.id;
             const query = {_id: ObjectId(id)};
